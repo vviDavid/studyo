@@ -1,0 +1,68 @@
+table user {
+  id int [pk] // ID user (PRIMARY KEY)
+  name varchar // nama user
+  email varchar // email user
+  pass varchar // password user (dienkripsi menggunakan bcrypt)
+  user_type varchar // peran user (mentor || learner)
+  birthday date // tanggal ulang tahun user
+  pfp varchar // foto profil user (dengan bantuan fungsi multer)
+  created_at datetime // waktu data user dibuat (menggunakan timestamp)
+  updated_at datetime // waktu data user diubah
+}
+
+table mentor {
+  id int [pk] // ID mentor (PRIMARY KEY)
+  user_id int [ref: > user.id] // Refer ke ID user dari tabel user
+  expertise varchar // bidang keahlian mentor
+}
+
+table learner {
+  id int [pk] // ID learner (PRIMARY KEY)
+  user_id int [ref: > user.id] // Refer ke ID user dari tabel user
+  grade varchar // jenjang pendidikan learner
+}
+
+table course {
+  id int [pk] // ID kelas/kursus (PRIMARY KEY)
+  mentor_id int [ref: > mentor.id] // Refer ke ID mentor dari tabel mentor
+  course_name varchar // nama kelas/kursus
+  course_desc varchar // deskripsi kelas/kursus
+  course_pfp varchar // foto profil kelas/kursus
+}
+
+table course_content {
+  id int [pk] // ID materi kelas/kursus (PRIMARY KEY)
+  course_id int [ref: > course.id] // Refer ke ID kelas dari tabel course
+  content_type varchar // kategori materi (materi || tugas)
+  content_title varchar // judul materi
+  content_body varchar // isi materi
+}
+
+table course_task {
+  id int [pk] // ID tugas (PRIMARY KEY)
+  course_content_id int [ref: > course_content.id] // Refer ke ID materi dari tabel course_content
+  task_submittance varchar // hasil pekerjaan dari learner (format file)
+  task_status varchar // status tugas (incomplete || submitted || graded || late)
+  task_score int // nilai tugas (bilangan bulat 0-100)
+}
+
+table course_member {
+  id int [pk] // ID peserta kelas (PRIMARY KEY)
+  learner_id int [ref: > learner.id] // Refer ke ID learner dari tabel learner
+  course_id int [ref: > course.id] // Refer ke ID kelas dari tabel course
+}
+
+table course_group {
+  id int [pk] // ID group (PRIMARY KEY)
+  course_id int [ref: > course.id] // Refer ke ID kelas dari tabel course
+  course_member_id int [ref: > course_member.id] // Refer ke ID peserta kelas dari tabel course_member
+  group_name varchar // nama group
+  group_desc varchar // deskripsi group
+}
+
+table comment {
+  id int [pk] // ID komentar (PRIMARY KEY)
+  user_id int [ref: > user.id] // Refer ke ID user dari tabel user
+  course_id int [ref: > course.id] // Refer ke ID kelas dari tabel course
+  comment_body varchar // isi komentar
+}
