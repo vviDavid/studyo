@@ -1,0 +1,169 @@
+<section class="page-shell">
+    <div class="page-card p-4 p-lg-5">
+        <div class="page-header d-flex flex-column flex-lg-row justify-content-between align-items-lg-start gap-3 mb-4">
+            <div>
+                <h2 class="authTitle fw-bold mt-2 mb-2">{{course.course_name}}</h2>
+                <p class="text-muted mb-0">{{course.course_desc}}</p>
+            </div>
+            <div class="d-flex gap-2">
+                {{#if (eq session.user_type "admin")}}
+                <a href="/course/{{course.id}}/edit" class="btn btn-outline-primary">
+                    <i class="bi bi-pencil-square me-2"></i>Edit
+                </a>
+                <a href="/course/{{course.id}}/delete" class="btn btn-outline-danger">
+                    <i class="bi bi-trash me-2"></i>Delete
+                </a>
+                {{/if}}
+                <a href="/course/list" class="btn btn-outline-secondary">Back to Courses</a>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="hero-card rounded-4 p-4 h-100">
+                    {{#if course.course_pfp}}
+                    <img src="/uploads/{{course.course_pfp}}" alt="{{course.course_name}}" class="rounded-3 mb-4" style="width: 100%; max-height: 300px; object-fit: cover;">
+                    {{/if}}
+                    <h4 class="authTitle fw-semibold mb-3">Description</h4>
+                    <p class="text-muted mb-0">{{course.course_desc}}</p>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="stat-card p-4 h-100">
+                    <div class="text-muted small mb-3">Mentor</div>
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        {{#if course.mentor_pfp}}
+                        <img src="/uploads/{{course.mentor_pfp}}" alt="{{course.mentor_name}}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                        {{else}}
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; color: white; font-weight: bold;">
+                            {{course.mentor_name.[0]}}
+                        </div>
+                        {{/if}}
+                        <div>
+                            <div class="fw-semibold">{{course.mentor_name}}</div>
+                            <div class="small text-muted">{{course.mentor_email}}</div>
+                        </div>
+                    </div>
+
+                    <div class="text-muted small mb-2">Learners Enrolled</div>
+                    <div class="display-6 fw-bold mb-4">{{course.member_count}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="page-card p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="authTitle fw-semibold mb-0">Contents</h5>
+                    </div>
+
+                    <div class="vertical-rack" id="course-content">
+                        {{#each courseContents}}
+                        <a href="/course/{{../course.id}}/content/{{this.id}}/detail" class="rack-item p-3 border-bottom" style="text-decoration: none; color: inherit;">
+                            <div class="d-flex justify-content-between align-items-start gap-3">
+                                <div>
+                                    <div class="fw-semibold">{{this.content_title}}</div>
+                                    <div class="small text-muted text-capitalize">{{this.content_type}}</div>
+                                </div>
+                                <i class="bi bi-chevron-right text-muted"></i>
+                            </div>
+                        </a>
+                        {{else}}
+                        <div class="empty-state p-4 text-center">
+                            <p class="text-muted mb-0">No course content available yet.</p>
+                        </div>
+                        {{/each}}
+                    </div>
+
+                    {{#if (eq session.user_type "mentor")}}
+                    <a href="/course/{{course.id}}/content/create" class="authSendBtn btn w-100 mt-4">
+                        <i class="bi bi-plus-lg me-1"></i>Add Content
+                    </a>
+                    {{/if}}
+                </div>
+
+                <div class="page-card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="authTitle fw-semibold mb-0">Groups</h5>
+                    </div>
+
+                    <div class="vertical-rack" id="course-groups">
+                        {{#each groups}}
+                        <div class="rack-item p-3 border-bottom">
+                            <div class="d-flex justify-content-between align-items-start gap-3">
+                                <div>
+                                    <a href="/course/{{../course.id}}/group/{{this.id}}/detail" class="fw-semibold" style="text-decoration: none; color: inherit;">{{this.group_name}}</a>
+                                    <div class="small text-muted">{{this.member_count}} members</div>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    {{#if (eq ../session.user_type "mentor")}}
+                                    <form action="/course/{{../course.id}}/group/{{this.id}}/delete" method="POST" onsubmit="return confirm('Delete this group?');">
+                                        <button type="submit" class="btn btn-link btn-sm text-danger p-0">Delete</button>
+                                    </form>
+                                    {{/if}}
+                                    <a href="/course/{{../course.id}}/group/{{this.id}}/detail" style="text-decoration: none;">
+                                        <i class="bi bi-chevron-right text-muted"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="empty-state p-4 text-center">
+                            <p class="text-muted mb-0">No groups created yet.</p>
+                        </div>
+                        {{/each}}
+                    </div>
+
+                    {{#if (eq session.user_type "mentor")}}
+                    <a href="/course/{{course.id}}/group/create" class="authSendBtn btn w-100 mt-4">
+                        <i class="bi bi-people-fill me-1"></i>Create Group
+                    </a>
+                    {{/if}}
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="page-card p-4">
+                    <h5 class="authTitle fw-semibold mb-4">Comments</h5>
+
+                    {{#if (or (eq session.user_type "learner") (eq session.user_type "mentor") )}}
+                    <form action="/course/{{course.id}}/comment" method="POST" class="mb-4">
+                        <div class="mb-3">
+                            <textarea class="form-control form-control-lg" name="comment_body" rows="3" placeholder="Say something, will you?" required></textarea>
+                        </div>
+                        <button type="submit" class="authSendBtn btn w-100 btn-sm">Post Comment</button>
+                    </form>
+                    {{/if}}
+
+                    <div class="vertical-rack">
+                        {{#each comments}}
+                        <div class="rack-item p-3 border-bottom">
+                            <div class="d-flex gap-2 mb-2 align-items-start">
+                                <div class="text-profile d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-weight: bold; font-size: 0.9rem;">{{this.name.[0]}}</div>
+                                <div class="flex-grow-1">
+                                    <div class="small text-muted d-flex justify-content-between align-items-center gap-2">
+                                        <span>{{this.name}} • {{this.created_at}}</span>
+                                        {{#if this.canDeleteComment}}
+                                        <form action="/course/comments/{{this.id}}/delete" method="POST" onsubmit="return confirm('Delete this comment?');">
+                                            <button type="submit" class="btn btn-link btn-sm text-danger p-0">Delete</button>
+                                        </form>
+                                        {{/if}}
+                                    </div>
+                                    <div class="small mt-1">{{this.comment_body}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="text-center text-muted p-4">
+                            <p class="mb-0">No comments yet.</p>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

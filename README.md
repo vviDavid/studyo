@@ -82,16 +82,6 @@ Menyimpan data setiap learner yang terdaftar dalam suatu kelas. Terhubung dengan
 >- **learner_id** `FOREIGN KEY dari learner.id`
 >- **course_id** `FOREIGN KEY dari course.id`
 
-### Tabel `course_group` (grup kelas/kursus)
-
-Menyimpan data setiap group yang terbentuk dalam suatu kelas.
-
->- **id** `PRIMARY KEY`
->- **course_id** `FOREIGN KEY dari course.id`
->- **course_member_id** `FOREIGN KEY dari course_member.id`
->- **group_name**
->- **group_desc**
-
 ### Tabel `comment` (komentar)
 
 Menyimpan setiap komentar yang disampaikan oleh semua pengguna di dalam kelas.

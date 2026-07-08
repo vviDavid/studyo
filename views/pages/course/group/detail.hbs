@@ -1,0 +1,42 @@
+<section class="page-shell">
+	<div class="page-card p-4 p-lg-5 w-100">
+		<div class="page-header d-flex flex-column flex-lg-row justify-content-between align-items-lg-start gap-3 mb-4">
+			<div>
+				<h2 class="authTitle fw-bold mt-2 mb-2">{{group.group_name}}</h2>
+				<p class="text-muted mb-0">{{group.course_name}}</p>
+			</div>
+			<div class="d-flex gap-2">
+				{{#if canManageCourseGroup}}
+				<form action="/course/{{group.course_id}}/group/{{group.id}}/delete" method="POST" onsubmit="return confirm('Delete this group?');">
+					<button type="submit" class="btn btn-outline-danger">Delete Group</button>
+				</form>
+				{{/if}}
+				<a href="/course/{{group.course_id}}/detail#course-groups" class="btn btn-outline-secondary">Back to Course</a>
+			</div>
+		</div>
+
+		<div class="page-card p-4">
+			<div class="d-flex justify-content-between align-items-center mb-4">
+				<h5 class="authTitle fw-semibold mb-0">Group Members</h5>
+				<span class="text-muted small">This group has {{members.length}} members</span>
+			</div>
+
+			<div class="vertical-rack">
+				{{#each members}}
+				<div class="rack-item p-3 border-bottom">
+					<div class="d-flex justify-content-between align-items-center gap-3">
+						<div>
+							<div class="fw-semibold">{{this.learner_name}}</div>
+							<div class="small text-muted">{{this.learner_email}}</div>
+						</div>
+					</div>
+				</div>
+				{{else}}
+				<div class="empty-state p-4 text-center">
+					<p class="text-muted mb-0">No members found in this group.</p>
+				</div>
+				{{/each}}
+			</div>
+		</div>
+	</div>
+</section>

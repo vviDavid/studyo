@@ -1,0 +1,133 @@
+<section class="page-shell">
+    <div class="page-card p-4 p-lg-5 w-100">
+        <div class="page-header d-flex flex-column flex-lg-row justify-content-between align-items-lg-start gap-3 mb-4">
+            <div>
+                <h2 class="authTitle fw-bold mt-2 mb-2">{{content.content_title}}</h2>
+                <p class="text-muted mb-0">{{course.course_name}}</p>
+            </div>
+            <div class="d-flex gap-2">
+                {{#if (eq session.user_type "mentor")}}
+                <form action="/course/{{course.id}}/content/{{content.id}}/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this content?');">
+                    <button type="submit" class="btn btn-outline-danger">
+                        <i class="bi bi-trash me-2"></i>Delete
+                    </button>
+                </form>
+                {{/if}}
+                <a href="/course/{{course.id}}/detail" class="btn btn-outline-primary">Back to Course</a>
+            </div>
+        </div>
+
+        {{#if errorMessage}}
+        <div class="alert alert-error mb-4" role="alert">{{errorMessage}}</div>
+        {{/if}}
+
+        {{#if successMessage}}
+        <div class="alert alert-success mb-4" role="alert">{{successMessage}}</div>
+        {{/if}}
+
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="page-card p-4 h-100">
+                    {{#if (eq content.content_type "subject")}}
+                    <p class="text-muted mb-0">{{content.content_body}}</p>
+                    {{else}}
+                    <p class="text-muted mb-4">{{content.content_body}}</p>
+
+                    {{#if canViewMentorRack}}
+                    <div class="stat-card p-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="authTitle mb-0 fw-semibold">Task Submittance</h5>
+                            <span class="text-muted small">Their score is yours to decide</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Learner</th>
+                                        <th>Email</th>
+                                        <th>Submitted File</th>
+                                        <th>Status</th>
+                                        <th>Score</th>
+                                        <th style="min-width: 230px;">Set Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#if mentorTaskSubmittances.length}}
+                                    {{#each mentorTaskSubmittances}}
+                                    <tr>
+                                        <td class="fw-semibold">{{this.learner_name}}</td>
+                                        <td>{{this.learner_email}}</td>
+                                        <td>
+                                            {{#if this.task_submittance}}
+                                            <a href="/uploads/{{this.task_submittance}}" target="_blank" rel="noopener noreferrer">{{this.task_submittance}}</a>
+                                            {{else}}
+                                            <span class="text-muted">Not submitted</span>
+                                            {{/if}}
+                                        </td>
+                                        <td class="text-capitalize">{{this.task_status}}</td>
+                                        <td>
+                                            {{#if this.task_score}}
+                                            <span class="fw-semibold">{{this.task_score}}</span>
+                                            {{else}}
+                                            <span class="text-muted">-</span>
+                                            {{/if}}
+                                        </td>
+                                        <td>
+                                            <form action="/course/{{../course.id}}/content/{{../content.id}}/grade/{{this.course_member_id}}" method="POST" class="d-flex gap-2">
+                                                <input type="number" class="form-control" name="task_score" min="0" max="100" required>
+                                                <button type="submit" class="authSendBtn btn">Save</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {{/each}}
+                                    {{else}}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">No course members found.</td>
+                                    </tr>
+                                    {{/if}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {{else}}
+
+                    <div class="row g-3">
+                        <div class="col-md-7">
+                            <div class="stat-card p-4 h-100">
+                                <div class="text-muted small mb-2">Your Submitted File</div>
+                                {{#if content.task_submittance }}
+                                <a href="/uploads/{{content.task_submittance}}" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
+                                    <i class="bi bi-file-earmark-arrow-down me-2"></i>View Submitted File
+                                </a>
+                                <div class="small text-muted mt-2">{{content.task_submittance}}</div>
+                                {{else}}
+                                <div class="text-muted">No file submitted yet.</div>
+                                {{/if}}
+
+                                {{#if canSubmitTask}}
+                                <form action="/course/{{course.id}}/content/{{content.id}}/submit" method="POST" enctype="multipart/form-data" class="mt-4">
+                                    <label class="authTitle form-label fw-semibold">Upload task file</label>
+                                    <input type="file" class="form-control mb-3" name="task_file" required>
+                                    <button type="submit" class="authSendBtn btn w-100">Submit Task</button>
+                                </form>
+                                {{/if}}
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="stat-card p-4 mb-3">
+                                <div class="text-muted small mb-2">Your Task Score</div>
+                                <div class="authTitle display-6 fw-bold mb-0">{{content.task_score}}</div>
+                            </div>
+                            <div class="stat-card p-4">
+                                <div class="text-muted small mb-2">Your Task Status</div>
+                                <div class="authTitle fw-semibold text-capitalize">{{content.task_status}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {{/if}}
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

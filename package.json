@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "createdb": "rm studyo-lms.db && node database/init.js",
+    "filldb": "node database/seeder.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +21,7 @@
     "express": "^5.2.1",
     "express-handlebars": "^8.0.4",
     "express-session": "^1.19.0",
+    "lenis": "^1.3.25",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.1"
   },

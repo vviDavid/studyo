@@ -1,0 +1,54 @@
+<section class="landing-section p-4 p-md-5">
+    <div class="d-flex flex-column justify-content-center h-100">
+        {{#unless session.user_id}}
+        <h1 class="display-2 fw-bold mb-3">Welcome to <span class="authTitle">Studyo</span></h1>
+        <p class="lead text-muted">Your Studio for Studying.</p>
+        {{else}}
+        <h1 class="display-2 fw-bold mb-3">Greetings, <span class="authTitle">{{session.name}}</span></h1>
+        <p class="lead text-muted">Welcome to Studyo. Your Studio for Studying.</p>
+        {{/unless}}
+    </div>
+</section>
+
+<section class="landing-section p-4 p-md-5">
+    <div class="d-flex flex-column justify-content-center h-100">
+        {{#if (eq session.user_type "learner")}}
+        <h2 class="display-6 fw-semibold mb-3">I see that you are a <span class="authTitle">learner</span>,</h2>
+        <p class="text-muted">We are glad to see you here. Time to learn new things.</p>
+        {{else}}
+        <h2 class="display-6 fw-semibold mb-3">Here as a learner,</h2>
+        <p class="text-muted">You may learn a lot, explore new things, fill yourself with knowledge.</p>
+        {{/if}}
+    </div>
+</section>
+
+<section class="landing-section p-4 p-md-5">
+    <div class="d-flex flex-column justify-content-center h-100">
+        {{#if (eq session.user_type "mentor")}}
+        <h2 class="display-6 fw-semibold mb-3">I see that you are a <span class="authTitle">mentor</span>,</h2>
+        <p class="text-muted">We are glad to see you here. Time to let the world see your intelligence.</p>
+        {{else}}
+        <h2 class="display-6 fw-semibold mb-3">Here as a mentor,</h2>
+        <p class="text-muted">You may guide learners, share insights, and help people grow better.</p>
+        {{/if}}
+    </div>
+</section>
+
+<section class="landing-section p-4 p-md-5">
+    <div class="d-flex flex-column justify-content-center h-100">
+        {{#if (eq session.user_type "admin")}}
+        <h2 class="display-6 fw-semibold mb-3">I see that you are an <span class="authTitle">admin</span>,</h2>
+        <p class="text-muted">You better be glad to see yourself. Time to work, man.</p>
+        {{else}}
+        <h2 class="display-6 fw-semibold mb-3">Here as an admin,</h2>
+        <p class="text-muted">Yeah just get to work immediately.</p>
+        {{/if}}
+    </div>
+</section>
+
+<section class="landing-section p-4 p-md-5">
+    <div class="d-flex flex-column justify-content-center h-100">
+        <h2 class="display-6 fw-semibold mb-3">Whoever you are,</h2>
+        <p class="text-muted">We are happy to see you here. Let's grow together.</p>
+    </div>
+</section>

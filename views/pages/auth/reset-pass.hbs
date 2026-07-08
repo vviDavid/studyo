@@ -1,0 +1,87 @@
+<section class="auth-shell d-flex align-items-center justify-content-center py-5">
+    <div class="auth-card p-4 p-md-5">
+        <div class="text-center mb-4">
+            <div class="mb-3">
+                <img src="/images/studyo_primary.png" alt="Studyo" style="height: 60px; object-fit: contain;">
+            </div>
+            <h2 class="authTitle fw-bold mt-3 mb-2">Reset your password</h2>
+            <p class="text-muted mb-0">Create a new password for your Studyo account.</p>
+        </div>
+
+        {{#if errorMessage}}
+        <div class="alert-modern alert-error mb-4" role="alert">
+            <div class="fw-semibold mb-2">Please fix the following issues:</div>
+            <ul class="mb-0 ps-3">
+                {{#each errorMessage}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
+        </div>
+        {{/if}}
+
+        {{#if successMessage}}
+        <div class="alert-modern alert-success mb-4" role="alert">
+            <div class="fw-semibold mb-2">Success!</div>
+            <ul class="mb-0 ps-3">
+                {{#each successMessage}}
+                {{this}}
+                {{/each}}
+            </ul>
+        </div>
+        {{/if}}
+
+        <form action="/auth/reset-pass" method="POST" class="row g-3">
+            <input type="hidden" name="token" value="{{token}}">
+            <div class="col-12">
+                <label class="form-label fw-semibold">New password</label>
+                <div class="password-field-wrapper">
+                    <input type="password" class="form-control form-control-lg" id="pass" name="pass" placeholder="New password" required>
+                    <button type="button" class="password-toggle" id="passToggle">
+                        <i class="bi bi-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-12">
+                <label class="form-label fw-semibold">Confirm password</label>
+                <div class="password-field-wrapper">
+                    <input type="password" class="form-control form-control-lg" id="confirmPass" name="confirmPass" placeholder="Confirm password" required>
+                    <button type="button" class="password-toggle" id="confirmPassToggle">
+                        <i class="bi bi-eye-slash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="authSendBtn btn w-100 btn-lg">Update password</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Password field toggle function
+    function setupPasswordToggle(toggleId, inputId) {
+        const toggle = document.getElementById(toggleId);
+        const input = document.getElementById(inputId);
+        
+        if (toggle && input) {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                const icon = this.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                }
+            });
+        }
+    }
+    
+    setupPasswordToggle('passToggle', 'pass');
+    setupPasswordToggle('confirmPassToggle', 'confirmPass');
+});
+</script>

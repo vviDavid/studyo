@@ -52,14 +52,6 @@ table course_member {
   course_id int [ref: > course.id] // Refer ke ID kelas dari tabel course
 }
 
-table course_group {
-  id int [pk] // ID group (PRIMARY KEY)
-  course_id int [ref: > course.id] // Refer ke ID kelas dari tabel course
-  course_member_id int [ref: > course_member.id] // Refer ke ID peserta kelas dari tabel course_member
-  group_name varchar // nama group
-  group_desc varchar // deskripsi group
-}
-
 table comment {
   id int [pk] // ID komentar (PRIMARY KEY)
   user_id int [ref: > user.id] // Refer ke ID user dari tabel user

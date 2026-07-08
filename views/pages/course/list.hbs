@@ -1,0 +1,66 @@
+<section class="page-shell">
+    <div class="page-card p-4 p-lg-5">
+        <div class="page-header d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+            <div>
+                <h2 class="authTitle fw-bold mt-2 mb-1">COURSES</h2>
+                <p class="text-muted mb-0">Teach and learn. All happens here.</p>
+            </div>
+            {{#if (eq session.user_type "admin")}}
+            <a href="/course/create" class="authSendBtn btn">
+                <i class="bi bi-plus-lg me-2"></i>Add Course
+            </a>
+            {{/if}}
+        </div>
+
+        {{#if courses}}
+        <div class="row g-4">
+            {{#each courses}}
+            <div class="col-12 col-md-6 col-xl-4">
+                <div class="course-card h-100 p-4">
+                    {{#if this.course_pfp}}
+                    <img src="/uploads/{{this.course_pfp}}" alt="{{this.course_name}}" class="rounded-2 mb-3" style="width: 100%; height: 150px; object-fit: cover;">
+                    {{else}}
+                    <div class="rounded-2 bg-light mb-3 d-flex align-items-center justify-content-center" style="height: 150px;">
+                        <i class="bi bi-book" style="font-size: 2rem; color: var(--muted);"></i>
+                    </div>
+                    {{/if}}
+                    
+                    <h5 class="fw-semibold mb-2">{{this.course_name}}</h5>
+                    <p class="text-muted small mb-3">{{this.course_desc}}</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <span class="text-muted small">By {{this.mentor_name}}</span>
+                            <div class="text-muted small">
+                                <i class="bi bi-people me-1"></i>{{this.member_count}} members
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 pt-3 border-top">
+                        <a href="/course/{{this.id}}/detail" class="btn btn-outline-primary flex-grow-1">
+                            <i class="bi bi-eye me-1"></i>View
+                        </a>
+                        {{#if (eq ../session.user_type "admin")}}
+                        <a href="/course/{{this.id}}/edit" class="icon-action" title="Edit course">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a href="/course/{{this.id}}/delete" class="icon-action delete" title="Delete course">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        {{else}}
+        <div class="col-12">
+            <div class="empty-state p-5 text-center">
+                <i class="bi bi-inbox" style="font-size: 3rem; color: var(--muted); display: block; margin-bottom: 1rem;"></i>
+                <h5 class="fw-semibold mb-2">No courses available yet.</h5>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</section>

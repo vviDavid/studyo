@@ -1,0 +1,120 @@
+<section class="page-shell">
+    <div class="page-card p-4 p-lg-5">
+        <div class="page-header d-flex flex-column flex-lg-row justify-content-between align-items-lg-start gap-3 mb-4">
+            <div>
+                <h2 class="authTitle fw-bold mt-2 mb-2">Update {{course.course_name}}</h2>
+                <p class="text-muted mb-0">Make changes. Big changes.</p>
+            </div>
+            <a href="/course/{{course.id}}/detail" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+
+        {{#if errorMessage}}
+        <div class="alert alert-error mb-4" role="alert">
+            <div class="fw-semibold mb-2">Please fix the following errors:</div>
+            <ul class="mb-0 ps-3">
+                {{#each errorMessage}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
+        </div>
+        {{/if}}
+
+        <form action="/course/{{course.id}}/edit" method="POST" enctype="multipart/form-data">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="page-card p-4">
+                        <h5 class="authTitle fw-semibold mb-4">Course Information</h5>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Name</label>
+                            <input type="text" class="form-control" name="course_name" value="{{course.course_name}}" required>
+                            <small class="text-muted">Example: Graphic Design 101</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Mentor</label>
+                            <select class="form-select" name="mentor_id" required>
+                                <option value="">Select a mentor...</option>
+                                {{#each mentors}}
+                                <option value="{{this.mentor_id}}" {{isSelected this.mentor_id ../course.mentor_id}}>{{this.name}} ({{this.email}})</option>
+                                {{/each}}
+                            </select>
+                            <small class="text-muted">Choose one of the available mentors</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Description</label>
+                            <textarea class="form-control" name="course_desc" rows="6">{{course.course_desc}}</textarea>
+                            <small class="text-muted">Example: We'll be talking about the fundamental concepts of graphic design</small>
+                        </div>
+
+                        <h5 class="authTitle fw-semibold mt-4 mb-3">Course Members</h5>
+                        <div class="learner-selection-box p-4 border rounded-3">
+                            {{#if availableLearners}}
+                            <div class="row g-3">
+                                {{#each availableLearners}}
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="members" value="{{this.id}}" id="learner{{this.id}}" {{#if this.isSelected}}checked{{/if}}>
+                                        <label class="form-check-label" for="learner{{this.id}}">
+                                            <strong>{{this.name}}</strong>
+                                            <div class="small text-muted">{{this.email}}</div>
+                                        </label>
+                                    </div>
+                                </div>
+                                {{/each}}
+                            </div>
+                            {{else}}
+                            <div class="text-muted text-center py-3">
+                                <p class="mb-0">No learners available to add.</p>
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="page-card p-4">
+                        <h5 class="authTitle fw-semibold mb-4">Course Profile Picture</h5>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Image</label>
+                            <div class="image-upload-wrapper mb-3">
+                                <div id="imagePreview" class="image-preview rounded-3 bg-light p-3 text-center mb-3" style="min-height: 120px; display: flex; align-items: center; justify-content: center;">
+                                    {{#if course.course_pfp}}
+                                    <img src="/uploads/{{course.course_pfp}}" alt="Course Image" style="max-width: 100%; max-height: 150px;">
+                                    {{else}}
+                                    <div class="text-muted">
+                                        <i class="bi bi-image" style="font-size: 2rem;"></i>
+                                        <p class="mb-0 small mt-2">No image</p>
+                                    </div>
+                                    {{/if}}
+                                </div>
+                                <input type="file" class="form-control" id="courseImage" name="course_pfp" accept="image/*">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="authSendBtn btn w-100">
+                            <i class="bi bi-pencil-square me-2"></i>Update Course
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script>
+document.getElementById('courseImage').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const preview = document.getElementById('imagePreview');
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            preview.innerHTML = `<img src="${event.target.result}" alt="Preview" style="max-width: 100%; max-height: 150px;">`;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>

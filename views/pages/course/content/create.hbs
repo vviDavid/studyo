@@ -1,0 +1,53 @@
+<section class="page-shell">
+    <div class="page-card p-4 p-lg-5 w-100">
+        <div class="page-header d-flex flex-column flex-lg-row justify-content-between align-items-lg-start gap-3 mb-4">
+            <div>
+                <h2 class="authTitle fw-bold mt-2 mb-2">Create Course Content</h2>
+                <p class="text-muted mb-0">Add another bit of knowledge here.</p>
+            </div>
+            <a href="/course/{{course.id}}/detail" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+
+        {{#if errorMessage}}
+        <div class="alert alert-error mb-4" role="alert">
+            <div class="fw-semibold mb-2">Please fix the following errors:</div>
+            <ul class="mb-0 ps-3">
+                {{#each errorMessage}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
+        </div>
+        {{/if}}
+
+        <form action="/course/{{course.id}}/content/create" method="POST">
+            <div class="page-card p-4">
+                <h5 class="authTitle fw-semibold mb-4">Content Information</h5>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Type</label>
+                    <select class="form-select" name="content_type" required>
+                        <option value="subject" {{isSelected formData.content_type "subject"}}>Subject</option>
+                        <option value="task" {{isSelected formData.content_type "task"}}>Task</option>
+                    </select>
+                    <small class="text-muted">Which will this content be? A challenge, or yet another knowledge?</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Name</label>
+                    <input type="text" class="form-control" name="content_name" value="{{formData.content_name}}" required>
+                    <small class="text-muted">Example: Chapter 1 - Getting Ready</small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Body</label>
+                    <textarea class="form-control" name="content_desc" rows="6" required>{{formData.content_desc}}</textarea>
+                    <small class="text-muted">Explain everything here.</small>
+                </div>
+
+                <button type="submit" class="authSendBtn btn w-100">
+                    <i class="bi bi-plus-lg me-2"></i>Create Content
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
