@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./public/images/studyo_primary.png" alt="Studyo" width="500"/>
+  <img src="./public/images/studyo_white.svg" alt="Studyo" width="500"/>
 </p>
 
 <a id="readme-id"></a>
@@ -344,7 +344,7 @@ router.post("/delete/:id", Controller.deleteEntity);
 ---
 
 <p align="center">
-  <img src="./public/images/studyo_primary.png" alt="Studyo" width="500"/>
+  <img src="./public/images/studyo_white.svg" alt="Studyo" width="500"/>
 </p>
 
 <a id="readme-eng"></a>
