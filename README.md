@@ -16,7 +16,7 @@ Aplikasi *Learning Management System* (LMS) ini bernama `Studyo`, memadukan isti
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/node-v.22.21.0-brightgreen" alt="Node"/>
+  <img src="https://img.shields.io/badge/node-v.24.18.0-brightgreen" alt="Node"/>
   <img src="https://img.shields.io/badge/express-v5.2.1-blue" alt="Express"/>
   <img src="https://img.shields.io/badge/status-active-success" alt="Status"/>
   <br>
@@ -361,7 +361,7 @@ This Learning Management System (LMS) application is called `Studyo`, combining 
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/node-v.22.21.0-brightgreen" alt="Node"/>
+  <img src="https://img.shields.io/badge/node-v.24.18.0-brightgreen" alt="Node"/>
   <img src="https://img.shields.io/badge/express-v5.2.1-blue" alt="Express"/>
   <img src="https://img.shields.io/badge/status-active-success" alt="Status"/>
   <br>
