@@ -47,29 +47,6 @@
                             <textarea class="form-control" name="course_desc" rows="6">{{formData.course_desc}}</textarea>
                             <small class="text-muted">Example: We'll be talking about the fundamental concepts of graphic design</small>
                         </div>
-
-                        <h5 class="authTitle fw-semibold mt-4 mb-3">Course Members</h5>
-                        <div class="learner-selection-box p-4 border rounded-3">
-                            {{#if availableLearners}}
-                            <div class="row g-3">
-                                {{#each availableLearners}}
-                                <div class="col-md-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="members" value="{{this.id}}" id="learner{{this.id}}" {{isChecked ../formData.members this.id}}>
-                                        <label class="form-check-label" for="learner{{this.id}}">
-                                            <strong>{{this.name}}</strong>
-                                            <div class="small text-muted">{{this.email}}</div>
-                                        </label>
-                                    </div>
-                                </div>
-                                {{/each}}
-                            </div>
-                            {{else}}
-                            <div class="text-muted text-center py-3">
-                                <p class="mb-0">No learners available to add.</p>
-                            </div>
-                            {{/if}}
-                        </div>
                     </div>
                 </div>
 

@@ -14,6 +14,10 @@ router.get('/:id/delete', authorize('admin'), CourseController.showDeleteCourse)
 
 router.get('/:id/detail', CourseController.showCourseDetail);
 
+router.post('/:id/enroll', authorize('learner'), CourseController.runEnrollCourse);
+
+router.post('/:id/unenroll', authorize('learner'), CourseController.runUnenrollCourse);
+
 router.post('/create', authorize('admin'), upload.single('course_pfp'), CourseController.runCreateCourse);
 
 router.post('/:id/edit', authorize('admin'), upload.single('course_pfp'), CourseController.runEditCourse);

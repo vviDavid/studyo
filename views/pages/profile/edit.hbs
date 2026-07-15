@@ -1,0 +1,105 @@
+<section class="page-shell">
+	<div class="page-card p-4 p-lg-5" style="max-width: 760px; margin: 0 auto;">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<div>
+				<h2 class="authTitle fw-bold mb-1">Edit Profile</h2>
+				<p class="text-muted mb-0">Update your profile information.</p>
+			</div>
+			<a href="/profile" class="btn btn-outline-secondary">Back to Profile</a>
+		</div>
+
+		{{#if errorMessage}}
+		<div class="alert alert-danger mb-4" role="alert">
+			<div class="fw-semibold mb-2">Please fix the following issues:</div>
+			<ul class="mb-0 ps-3">
+				{{#each errorMessage}}
+				<li>{{this}}</li>
+				{{/each}}
+			</ul>
+		</div>
+		{{/if}}
+
+		<form action="/profile/edit" method="POST" enctype="multipart/form-data" class="row g-4">
+			<div class="col-12 text-center">
+				<div id="imagePreview" class="rounded-circle border overflow-hidden d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px; background: #eef2ff;">
+					{{#if profile.pfp}}
+					<img src="/uploads/{{profile.pfp}}" alt="{{profile.name}}" style="width: 100%; height: 100%; object-fit: cover;">
+					{{else}}
+					<span class="authTitle fw-bold" style="font-size: 2rem; color: #4f46e5;">{{profile.name.[0]}}</span>
+					{{/if}}
+				</div>
+			</div>
+
+			<div class="col-12">
+				<label class="form-label fw-semibold">Profile Picture</label>
+				<input type="file" class="form-control" id="pfp" name="pfp" accept="image/*">
+				<input type="hidden" name="removePhoto" id="removePhoto" value="0">
+				<button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="clearPhotoBtn">Remove current photo</button>
+			</div>
+
+			<div class="col-md-6">
+				<label class="form-label fw-semibold">Name</label>
+				<input type="text" class="form-control" name="name" value="{{profile.name}}" required>
+			</div>
+
+			<div class="col-md-6">
+				<label class="form-label fw-semibold">Email</label>
+				<input type="email" class="form-control" name="email" value="{{profile.email}}" required>
+			</div>
+
+			<div class="col-md-6">
+				<label class="form-label fw-semibold">Birthday</label>
+				<input type="date" class="form-control" name="birthday" value="{{profile.birthday}}">
+			</div>
+
+			{{#if (eq profile.user_type "mentor")}}
+			<div class="col-md-6">
+				<label class="form-label fw-semibold">Expertise</label>
+				<input type="text" class="form-control" name="expertise" value="{{profile.expertise}}" placeholder="e.g. Mathematics">
+			</div>
+			{{/if}}
+
+			{{#if (eq profile.user_type "learner")}}
+			<div class="col-md-6">
+				<label class="form-label fw-semibold">Grade</label>
+				<input type="text" class="form-control" name="grade" value="{{profile.grade}}" placeholder="e.g. XI-A">
+			</div>
+			{{/if}}
+
+			<div class="col-12 d-flex justify-content-end gap-2">
+				<a href="/profile" class="btn btn-outline-secondary">Cancel</a>
+				<button type="submit" class="authSendBtn btn">Save Profile</button>
+			</div>
+		</form>
+	</div>
+</section>
+
+<script>
+	const pfpInput = document.getElementById('pfp');
+	const previewBox = document.getElementById('imagePreview');
+	const clearPhotoBtn = document.getElementById('clearPhotoBtn');
+	const removePhotoField = document.getElementById('removePhoto');
+
+	if (pfpInput) {
+		pfpInput.addEventListener('change', function () {
+			const file = this.files && this.files[0];
+			if (!file) return;
+
+			removePhotoField.value = '0';
+
+			const reader = new FileReader();
+			reader.onload = function (event) {
+				previewBox.innerHTML = '<img src="' + event.target.result + '" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">';
+			};
+			reader.readAsDataURL(file);
+		});
+	}
+
+	if (clearPhotoBtn) {
+		clearPhotoBtn.addEventListener('click', function () {
+			pfpInput.value = '';
+			removePhotoField.value = '1';
+			previewBox.innerHTML = '<span class="authTitle fw-bold" style="font-size: 2rem; color: #4f46e5;">{{profile.name.[0]}}</span>';
+		});
+	}
+</script>

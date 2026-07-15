@@ -12,6 +12,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const contentRoutes = require('./routes/contentRoutes');
 const groupRoutes = require('./routes/groupRoutes');
+const profileRoutes = require('./routes/profileRoutes');
 const authRoutes = require('./routes/authRoutes');
 const { isAuthenticated, authorize } = require('./middlewares/authMiddleware');
 
@@ -32,8 +33,8 @@ app.engine('hbs', engine({
   extname: 'hbs',
   defaultLayout: 'main',
   layoutsDir: path.join(__dirname, 'views/layouts'),
+  partialsDir: path.join(__dirname, 'views/partials'),
   helpers: {
-    inc: (value) => parseInt(value) + 1,
     isSelected: (a, b) => {
       return String(a) === String(b) ? 'selected' : '';
     },
@@ -50,21 +51,6 @@ app.engine('hbs', engine({
         return isEqual;
       }
     },
-    inArray: function(arr, val, options) {
-      if (!arr) {
-        if (options && typeof options.fn === 'function') {
-          return options.inverse(this);
-        }
-        return false;
-      }
-      const arrValues = arr.map(v => String(v));
-      const isIncluded = arrValues.includes(String(val));
-      if (options && typeof options.fn === 'function') {
-        return isIncluded ? options.fn(this) : options.inverse(this);
-      } else {
-        return isIncluded;
-      }
-    },
     or: function(a, b, options) {
       const result = a || b;
       if (options && typeof options.fn === 'function') {
@@ -72,10 +58,6 @@ app.engine('hbs', engine({
       } else {
         return result;
       }
-    },
-    substring: (str, start, end) => {
-      if (!str) return '';
-      return String(str).substring(start, end);
     }
   }
 }))
@@ -106,6 +88,7 @@ app.use("/admin", isAuthenticated, authorize('admin'), adminRoutes);
 app.use("/course", isAuthenticated, courseRoutes);
 app.use("/course/:id/content", isAuthenticated, contentRoutes);
 app.use("/course/:id/group", isAuthenticated, groupRoutes);
+app.use("/profile", isAuthenticated, profileRoutes);
 app.use("/auth", authRoutes);
 
 app.use((req, res) => {

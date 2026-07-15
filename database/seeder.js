@@ -183,35 +183,6 @@ function seedCourses() {
   console.log('✓ 10 courses created');
 }
 
-function seedCourseMembers() {
-  console.log('Seeding course members...');
-  const memberStmt = db.prepare(
-    `INSERT INTO course_member (learner_id, course_id)
-     VALUES (?, ?)`
-  );
-
-  // Get all learners and courses
-  const learners = db.prepare('SELECT id FROM learner').all();
-  const courses = db.prepare('SELECT id FROM course').all();
-
-  // Assign each learner to multiple courses (distribute evenly)
-  for (const learner of learners) {
-    // Each learner joins 5-7 courses
-    const numCourses = Math.floor(Math.random() * 3) + 5;
-    const selectedCourses = new Set();
-
-    while (selectedCourses.size < numCourses && selectedCourses.size < courses.length) {
-      const randomCourse = courses[Math.floor(Math.random() * courses.length)];
-      selectedCourses.add(randomCourse.id);
-    }
-
-    for (const courseId of selectedCourses) {
-      memberStmt.run(learner.id, courseId);
-    }
-  }
-  console.log('✓ Course members created');
-}
-
 function runSeeder() {
   try {
     console.log('\n=== Starting Database Seeding ===\n');
@@ -235,7 +206,6 @@ function runSeeder() {
     seedMentors();
     seedLearners();
     seedCourses();
-    seedCourseMembers();
 
     console.log('\n=== Database Seeding Completed Successfully ===\n');
     console.log('Summary:');
@@ -243,7 +213,6 @@ function runSeeder() {
     console.log('- 10 Mentors (linked to users)');
     console.log('- 10 Learners (linked to users)');
     console.log('- 10 Courses (each mentor has 1 course)');
-    console.log('- Course members (learners enrolled in courses)');
     console.log('\nAll relationships and foreign keys are properly maintained.\n');
 
   } catch (error) {

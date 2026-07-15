@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js",
+    "app": "nodemon index.js",
     "createdb": "rm studyo-lms.db && node database/init.js",
     "filldb": "node database/seeder.js"
   },

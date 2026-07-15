@@ -91,6 +91,236 @@ body {
     align-items: center;
 }
 
+.landing-hero {
+    position: relative;
+}
+
+.landing-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+.landing-copy,
+.landing-radar,
+.landing-panel,
+.landing-nav {
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--bg) 0%, #ffffff 100%);
+    border-radius: 1.5rem;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+}
+
+.landing-copy,
+.landing-panel {
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.landing-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 28rem;
+}
+
+.landing-radar {
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.landing-radar-panel {
+    position: relative;
+    width: min(100%, 22rem);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+}
+
+.landing-radar-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+}
+
+.landing-radar-ring-one {
+    inset: 1rem;
+    animation: radarPulse 8s linear infinite;
+}
+
+.landing-radar-ring-two {
+    inset: 3rem;
+    animation: radarPulse 8s linear infinite reverse;
+}
+
+.landing-radar-core {
+    width: 9rem;
+    height: 9rem;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary);
+    color: var(--bg);
+    text-align: center;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+}
+
+.landing-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.9rem;
+    margin: 0 1rem 1rem;
+    position: sticky;
+    top: 5.75rem;
+    z-index: 1010;
+    backdrop-filter: blur(14px);
+}
+
+.landing-nav a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    background: var(--bg);
+    transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.landing-nav a:hover {
+    transform: translateY(-1px);
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--bg);
+}
+
+.landing-panel {
+    max-width: 64rem;
+    margin: 0 auto;
+    transform: translateY(24px);
+    opacity: 0;
+    transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.2s ease;
+}
+
+.landing-panel-wide {
+    max-width: 72rem;
+}
+
+.reveal-card {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal-card.is-visible,
+.landing-panel.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.landing-panel:hover,
+.landing-copy:hover,
+.landing-radar:hover {
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+}
+
+.landing-panel-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.landing-metrics,
+.landing-steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+}
+
+.metric-card,
+.step-chip {
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: var(--bg);
+    padding: 1rem 1.1rem;
+}
+
+.metric-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+}
+
+.metric-value {
+    font-weight: 700;
+    color: var(--text);
+}
+
+.step-chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+
+@keyframes radarPulse {
+    0% {
+        transform: scale(0.98);
+        opacity: 0.75;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.98);
+        opacity: 0.75;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .landing-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .landing-copy {
+        min-height: 24rem;
+    }
+
+    .landing-nav {
+        top: 5.25rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .landing-nav {
+        margin: 0 0 1rem;
+    }
+
+    .landing-metrics,
+    .landing-steps {
+        grid-template-columns: 1fr;
+    }
+}
+
 .hero-card {
     background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
     border: 1px solid rgba(79, 70, 229, 0.12);
@@ -453,4 +683,38 @@ footer {
 
 .rack-item:last-child {
     border-bottom: none;
+}
+
+.markdown-content > *:last-child {
+    margin-bottom: 0;
+}
+
+.markdown-content p,
+.markdown-content ul,
+.markdown-content ol,
+.markdown-content blockquote,
+.markdown-content pre {
+    margin-bottom: 1rem;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+    color: var(--text);
+    margin-top: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.markdown-content a {
+    color: var(--primary);
+}
+
+.markdown-content code {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 0.45rem;
+    padding: 0.1rem 0.35rem;
 }

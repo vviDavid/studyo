@@ -14,6 +14,17 @@ function canManageCourseGroup(user_type, user_id, course) {
     return String(course.mentor_id) === String(mentorId);
 }
 
+function isLearnerEnrolledInCourse(user_id, course_id) {
+    const membership = db.prepare(
+        `SELECT course_member.id
+        FROM course_member
+        JOIN learner ON course_member.learner_id = learner.id
+        WHERE learner.user_id = ? AND course_member.course_id = ?`
+    ).get(user_id, course_id);
+
+    return !!membership;
+}
+
 function showGroupDetail(req, res) {
     const { id, groupId } = req.params;
     const { user_id, user_type } = req.session;
@@ -29,6 +40,14 @@ function showGroupDetail(req, res) {
     const members = CourseGroupModel.fetchCourseGroupMembers(group.course_id, group.group_name);
     const course = CourseModel.fetchCourseById(group.course_id);
     const canManageGroup = !!course && canManageCourseGroup(user_type, user_id, course);
+    const canViewAsLearner = user_type !== 'learner' || isLearnerEnrolledInCourse(user_id, group.course_id);
+
+    if (!canViewAsLearner) {
+        return res.status(403).render('pages/error', {
+            title: 'Unauthorized',
+            message: 'Only enrolled learners can view this group.'
+        });
+    }
 
     res.render('pages/course/group/detail', {
         title: `${group.group_name} - Studyo`,

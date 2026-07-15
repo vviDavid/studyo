@@ -6,6 +6,21 @@
                 <p class="text-muted mb-0">{{course.course_desc}}</p>
             </div>
             <div class="d-flex gap-2">
+                {{#if (eq session.user_type "learner")}}
+                    {{#if isEnrolled}}
+                    <form action="/course/{{course.id}}/unenroll" method="POST" onsubmit="return confirm('Unenroll from this course?');">
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="bi bi-journal-minus me-2"></i>Unenroll
+                        </button>
+                    </form>
+                    {{else}}
+                    <form action="/course/{{course.id}}/enroll" method="POST">
+                        <button type="submit" class="authSendBtn btn">
+                            <i class="bi bi-journal-plus me-2"></i>Enroll
+                        </button>
+                    </form>
+                    {{/if}}
+                {{/if}}
                 {{#if (eq session.user_type "admin")}}
                 <a href="/course/{{course.id}}/edit" class="btn btn-outline-primary">
                     <i class="bi bi-pencil-square me-2"></i>Edit
@@ -18,6 +33,15 @@
             </div>
         </div>
 
+        {{#if successMessage}}
+        <div class="alert alert-success mb-4" role="alert">{{successMessage}}</div>
+        {{/if}}
+
+        {{#if errorMessage}}
+        <div class="alert alert-error mb-4" role="alert">{{errorMessage}}</div>
+        {{/if}}
+
+        {{#if (or (or (eq session.user_type "mentor") (eq session.user_type "admin")) isEnrolled)}}
         <div class="row g-4 mb-4">
             <div class="col-lg-8">
                 <div class="hero-card rounded-4 p-4 h-100">
@@ -165,5 +189,21 @@
                 </div>
             </div>
         </div>
+        {{else}}
+        <div class="page-card p-4 p-lg-5 text-center">
+            <div class="mx-auto" style="max-width: 560px;">
+                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 72px; height: 72px; background: rgba(13, 110, 253, 0.1); color: var(--bs-primary);">
+                    <i class="bi bi-journal-plus" style="font-size: 2rem;"></i>
+                </div>
+                <h4 class="authTitle fw-semibold mb-3">Enroll to see what lies in here.</h4>
+                <p class="text-muted mb-4">We are waiting!</p>
+                <form action="/course/{{course.id}}/enroll" method="POST" class="d-inline-block">
+                    <button type="submit" class="authSendBtn btn px-4">
+                        <i class="bi bi-journal-plus me-2"></i>Enroll now
+                    </button>
+                </form>
+            </div>
+        </div>
+        {{/if}}
     </div>
 </section>

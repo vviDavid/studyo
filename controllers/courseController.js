@@ -40,6 +40,34 @@ function mentorExists(mentor_id) {
     return !!mentor;
 }
 
+function getLearnerIdByUserId(user_id) {
+    return db.prepare(
+        `SELECT id FROM learner WHERE user_id = ?`
+    ).get(user_id)?.id;
+}
+
+function isLearnerEnrolledInCourse(user_id, course_id) {
+    const enrollment = db.prepare(
+        `SELECT course_member.id
+        FROM course_member
+        JOIN learner ON course_member.learner_id = learner.id
+        WHERE learner.user_id = ? AND course_member.course_id = ?`
+    ).get(user_id, course_id);
+
+    return !!enrollment;
+}
+
+function fetchLearnerEnrolledCourseIds(user_id) {
+    return new Set(
+        db.prepare(
+            `SELECT course_member.course_id
+            FROM course_member
+            JOIN learner ON course_member.learner_id = learner.id
+            WHERE learner.user_id = ?`
+        ).all(user_id).map((row) => String(row.course_id))
+    );
+}
+
 function validateCourse(course_name, mentor_id) {
     const errorMessage = [];
 
@@ -67,7 +95,11 @@ function showCourseList(req, res) {
     } else if (user_type === 'mentor') {
         courses = CourseModel.fetchAllCoursesByMentorId(user_id);
     } else if (user_type === 'learner') {
-        courses = CourseModel.fetchAllCoursesByLearnerId(user_id);
+        const enrolledCourseIds = fetchLearnerEnrolledCourseIds(user_id);
+        courses = CourseModel.fetchAllCourses().map((course) => ({
+            ...course,
+            isEnrolled: enrolledCourseIds.has(String(course.id))
+        }));
     }
 
     res.render("pages/course/list", {
@@ -81,15 +113,11 @@ function showCreateCourse(req, res) {
     if (!requireAdminAccess(req, res)) return;
 
     const { user_type } = req.session;
-    const LearnerModel = require('../models/Learner');
-
-    const availableLearners = LearnerModel.fetchAllLearners();
     const mentors = fetchMentorOptions();
 
     res.render("pages/course/create", {
         title: "Create Course - Studyo",
         user_type,
-        availableLearners,
         mentors
     });
 }
@@ -99,7 +127,6 @@ function showEditCourse(req, res) {
 
     const { id } = req.params;
     const { user_type } = req.session;
-    const LearnerModel = require('../models/Learner');
 
     const course = CourseModel.fetchCourseById(id);
 
@@ -110,22 +137,12 @@ function showEditCourse(req, res) {
         });
     }
 
-    const availableLearners = LearnerModel.fetchAllLearners();
     const mentors = fetchMentorOptions();
-    const currentMembers = CourseMemberModel.fetchCourseMemberByCourseId(id);
-    const currentMemberIds = currentMembers.map(m => m.learner_id);
-
-    // Mark which learners are already members
-    const learnersWithSelection = availableLearners.map(learner => ({
-        ...learner,
-        isSelected: currentMemberIds.includes(learner.id)
-    }));
 
     res.render("pages/course/edit", {
         title: `Edit ${course.course_name} - Studyo`,
         course,
         user_type,
-        availableLearners: learnersWithSelection,
         mentors
     });
 }
@@ -158,7 +175,7 @@ function runCreateCourse(req, res) {
         return;
     }
 
-    const { course_name, course_desc, members, mentor_id } = req.body;
+    const { course_name, course_desc, mentor_id } = req.body;
     const { user_type } = req.session;
     const course_pfp = req.file ? req.file.filename : null;
 
@@ -170,15 +187,12 @@ function runCreateCourse(req, res) {
     }
 
     if (errorMessage.length > 0) {
-        const LearnerModel = require('../models/Learner');
-        const availableLearners = LearnerModel.fetchAllLearners();
         const mentors = fetchMentorOptions();
         return res.render("pages/course/create", {
             title: "Create Course - Studyo",
             user_type,
             errorMessage,
             formData: { course_name, course_desc, mentor_id: selectedMentorId },
-            availableLearners,
             mentors
         });
     }
@@ -188,14 +202,7 @@ function runCreateCourse(req, res) {
             `INSERT INTO course (mentor_id, course_name, course_desc, course_pfp) 
             VALUES (?, ?, ?, ?)`
         );
-        const result = stmt.run(selectedMentorId, course_name.trim(), course_desc.trim(), course_pfp);
-        const courseId = result.lastInsertRowid;
-
-        // Add members to course
-        if (members && members.length > 0) {
-            const memberIds = Array.isArray(members) ? members : [members];
-            CourseMemberModel.createBulkCourseMember(courseId, memberIds);
-        }
+        stmt.run(selectedMentorId, course_name.trim(), course_desc.trim(), course_pfp);
 
         res.redirect("/course/list");
     } catch (error) {
@@ -205,15 +212,12 @@ function runCreateCourse(req, res) {
             deleteUploadedImage(req.file.filename);
         }
 
-        const LearnerModel = require('../models/Learner');
-        const availableLearners = LearnerModel.fetchAllLearners();
         const mentors = fetchMentorOptions();
         res.render("pages/course/create", {
             title: "Create Course - Studyo",
             user_type,
             errorMessage: ["An error occurred while creating the course. Please try again."],
             formData: { course_name, course_desc, mentor_id: selectedMentorId },
-            availableLearners,
             mentors
         });
     }
@@ -226,7 +230,7 @@ function runEditCourse(req, res) {
     }
 
     const { id } = req.params;
-    const { course_name, course_desc, members, mentor_id } = req.body;
+    const { course_name, course_desc, mentor_id } = req.body;
     const { user_type } = req.session;
     const course_pfp = req.file ? req.file.filename : null;
 
@@ -248,21 +252,12 @@ function runEditCourse(req, res) {
 
     if (errorMessage.length > 0) {
         if (req.file) deleteUploadedImage(req.file.filename);
-        const LearnerModel = require('../models/Learner');
-        const availableLearners = LearnerModel.fetchAllLearners();
         const mentors = fetchMentorOptions();
-        const currentMembers = CourseMemberModel.fetchCourseMemberByCourseId(id);
-        const currentMemberIds = currentMembers.map(m => m.learner_id);
-        const learnersWithSelection = availableLearners.map(learner => ({
-            ...learner,
-            isSelected: currentMemberIds.includes(learner.id)
-        }));
         return res.render("pages/course/edit", {
             title: `Edit ${course.course_name} - Studyo`,
             course: { ...course, course_name, course_desc, mentor_id: selectedMentorId },
             user_type,
             errorMessage,
-            availableLearners: learnersWithSelection,
             mentors
         });
     }
@@ -278,36 +273,106 @@ function runEditCourse(req, res) {
             `UPDATE course SET mentor_id = ?, course_name = ?, course_desc = ?, course_pfp = ? WHERE id = ?`
         ).run(selectedMentorId, course_name.trim(), course_desc.trim(), newPfp, id);
 
-        if (members) {
-            const memberIds = Array.isArray(members) ? members : [members];
-            CourseMemberModel.createBulkCourseMember(id, memberIds);
-        } else {
-            CourseMemberModel.deleteCourseMemberByCourseId(id);
-        }
-
         res.redirect(`/course/${id}/detail`);
     } catch (error) {
         console.error("Error updating course:", error);
         if (req.file) deleteUploadedImage(req.file.filename);
 
-        const LearnerModel = require('../models/Learner');
-        const availableLearners = LearnerModel.fetchAllLearners();
         const mentors = fetchMentorOptions();
-        const currentMembers = CourseMemberModel.fetchCourseMemberByCourseId(id);
-        const currentMemberIds = currentMembers.map(m => m.learner_id);
-        const learnersWithSelection = availableLearners.map(learner => ({
-            ...learner,
-            isSelected: currentMemberIds.includes(learner.id)
-        }));
         res.render("pages/course/edit", {
             title: `Edit ${course.course_name} - Studyo`,
             course,
             user_type,
             errorMessage: ["An error occurred while updating the course. Please try again."],
-            availableLearners: learnersWithSelection,
             mentors
         });
     }
+}
+
+function runEnrollCourse(req, res) {
+    const { id } = req.params;
+    const { user_id, user_type } = req.session;
+
+    if (user_type !== 'learner') {
+        return res.status(403).render("pages/error", {
+            title: "Unauthorized",
+            message: "Only learners can enroll in courses."
+        });
+    }
+
+    const course = CourseModel.fetchCourseById(id);
+
+    if (!course) {
+        return res.status(404).render("pages/error", {
+            title: "Course Not Found",
+            message: "The course you're looking for doesn't exist."
+        });
+    }
+
+    const learnerId = getLearnerIdByUserId(user_id);
+
+    if (!learnerId) {
+        return res.status(404).render("pages/error", {
+            title: "Learner Not Found",
+            message: "Your learner profile could not be found."
+        });
+    }
+
+    const existingEnrollment = db.prepare(
+        `SELECT id FROM course_member WHERE learner_id = ? AND course_id = ?`
+    ).get(learnerId, id);
+
+    if (!existingEnrollment) {
+        db.prepare(
+            `INSERT INTO course_member (learner_id, course_id) VALUES (?, ?)`
+        ).run(learnerId, id);
+    }
+
+    res.redirect(`/course/${id}/detail?success=${encodeURIComponent(existingEnrollment ? 'You are already enrolled in this course.' : 'You have enrolled in this course successfully.')}`);
+}
+
+function runUnenrollCourse(req, res) {
+    const { id } = req.params;
+    const { user_id, user_type } = req.session;
+
+    if (user_type !== 'learner') {
+        return res.status(403).render("pages/error", {
+            title: "Unauthorized",
+            message: "Only learners can unenroll from courses."
+        });
+    }
+
+    const course = CourseModel.fetchCourseById(id);
+
+    if (!course) {
+        return res.status(404).render("pages/error", {
+            title: "Course Not Found",
+            message: "The course you're looking for doesn't exist."
+        });
+    }
+
+    const learnerId = getLearnerIdByUserId(user_id);
+
+    if (!learnerId) {
+        return res.status(404).render("pages/error", {
+            title: "Learner Not Found",
+            message: "Your learner profile could not be found."
+        });
+    }
+
+    const existingEnrollment = db.prepare(
+        `SELECT id FROM course_member WHERE learner_id = ? AND course_id = ?`
+    ).get(learnerId, id);
+
+    if (!existingEnrollment) {
+        return res.redirect(`/course/${id}/detail?error=${encodeURIComponent('You are not enrolled in this course.')}`);
+    }
+
+    db.prepare(
+        `DELETE FROM course_member WHERE learner_id = ? AND course_id = ?`
+    ).run(learnerId, id);
+
+    res.redirect(`/course/${id}/detail?success=${encodeURIComponent('You have unenrolled from this course.')}`);
 }
 
 function runDeleteCourse(req, res) {
@@ -367,15 +432,7 @@ function showCourseDetail(req, res) {
         `SELECT * FROM course_content WHERE course_id = ? ORDER BY content_type, id ASC`
     ).all(id);
 
-    let isEnrolled = false;
-    if (user_type === 'learner') {
-        const enrollment = db.prepare(
-            `SELECT course_member.id FROM course_member
-            JOIN learner ON course_member.learner_id = learner.id
-            WHERE learner.user_id = ? AND course_member.course_id = ?`
-        ).get(user_id, id);
-        isEnrolled = !!enrollment;
-    }
+    const isEnrolled = user_type === 'learner' ? isLearnerEnrolledInCourse(user_id, id) : false;
 
     const isMentor = user_type === 'mentor' && course.mentor_id === user_id;
     const isAdmin = user_type === 'admin';
@@ -397,7 +454,9 @@ function showCourseDetail(req, res) {
         isMentor,
         isAdmin,
         user_type,
-        groups
+        groups,
+        successMessage: req.query.success,
+        errorMessage: req.query.error
     });
 }
 
@@ -405,6 +464,13 @@ function addCourseComment(req, res) {
     const { id } = req.params;
     const { comment_body } = req.body;
     const { user_id, user_type } = req.session;
+
+    if (user_type === 'learner' && !isLearnerEnrolledInCourse(user_id, id)) {
+        return res.status(403).render("pages/error", {
+            title: "Unauthorized",
+            message: "Only enrolled learners can comment on this course."
+        });
+    }
 
     if (!comment_body || comment_body.trim() === "") {
         return res.redirect(`/course/${id}/detail`);
@@ -461,6 +527,8 @@ module.exports = {
     runCreateCourse,
     runEditCourse,
     runDeleteCourse,
+    runEnrollCourse,
+    runUnenrollCourse,
     showCourseDetail,
     addCourseComment,
     deleteCourseComment

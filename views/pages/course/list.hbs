@@ -41,6 +41,21 @@
                         <a href="/course/{{this.id}}/detail" class="btn btn-outline-primary flex-grow-1">
                             <i class="bi bi-eye me-1"></i>View
                         </a>
+                        {{#if (eq ../session.user_type "learner")}}
+                            {{#if this.isEnrolled}}
+                            <form action="/course/{{this.id}}/unenroll" method="POST" class="flex-grow-1" onsubmit="return confirm('Unenroll from this course?');">
+                                <button type="submit" class="btn btn-outline-danger w-100">
+                                    <i class="bi bi-journal-minus me-1"></i>Unenroll
+                                </button>
+                            </form>
+                            {{else}}
+                            <form action="/course/{{this.id}}/enroll" method="POST" class="flex-grow-1">
+                                <button type="submit" class="authSendBtn btn w-100">
+                                    <i class="bi bi-journal-plus me-1"></i>Enroll
+                                </button>
+                            </form>
+                            {{/if}}
+                        {{/if}}
                         {{#if (eq ../session.user_type "admin")}}
                         <a href="/course/{{this.id}}/edit" class="icon-action" title="Edit course">
                             <i class="bi bi-pencil-square"></i>

@@ -71,6 +71,15 @@ function showCourseContentDetail(req, res) {
 	const detail = content;
 	const mentorId = getMentorIdByUserId(user_id);
 	const learnerCourseMember = getCourseMemberByUserAndCourse(user_id, id);
+	const canViewAsLearner = user_type !== 'learner' || isLearnerEnrolledInCourse(user_id, id);
+
+	if (!canViewAsLearner) {
+		return res.status(403).render('pages/error', {
+			title: 'Unauthorized',
+			message: 'Only enrolled learners can view this course content.'
+		});
+	}
+
 	const learnerTask = detail.content_type === 'task' && learnerCourseMember
 		? db.prepare(
 			`SELECT task_submittance, task_status, task_score
