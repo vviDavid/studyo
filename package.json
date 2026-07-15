@@ -9,7 +9,7 @@
     "filldb": "node database/seeder.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Dapid",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
