@@ -3,7 +3,7 @@ const db = require('./config');
 db.exec(`
   PRAGMA foreign_keys = ON;
 
-  CREATE TABLE user (
+  CREATE TABLE IF NOT EXISTS user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
@@ -16,21 +16,21 @@ db.exec(`
     reset_token TEXT
   );
 
-  CREATE TABLE mentor (
+  CREATE TABLE IF NOT EXISTS mentor (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     expertise TEXT,
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
   );
 
-  CREATE TABLE learner (
+  CREATE TABLE IF NOT EXISTS learner (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     grade TEXT,
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
   );
 
-  CREATE TABLE course (
+  CREATE TABLE IF NOT EXISTS course (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     mentor_id INTEGER NOT NULL,
     course_name TEXT NOT NULL,
@@ -39,7 +39,7 @@ db.exec(`
     FOREIGN KEY (mentor_id) REFERENCES mentor(id) ON DELETE CASCADE
   );
 
-  CREATE TABLE course_content (
+  CREATE TABLE IF NOT EXISTS course_content (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     course_id INTEGER NOT NULL,
     content_type TEXT NOT NULL CHECK(content_type IN ('subject', 'task')),
@@ -48,7 +48,7 @@ db.exec(`
     FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE
   );
 
-  CREATE TABLE course_task (
+  CREATE TABLE IF NOT EXISTS course_task (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     course_content_id INTEGER NOT NULL,
     course_member_id INTEGER NOT NULL,
@@ -59,7 +59,7 @@ db.exec(`
     FOREIGN KEY (course_member_id) REFERENCES course_member(id) ON DELETE CASCADE
   );
 
-  CREATE TABLE course_member (
+  CREATE TABLE IF NOT EXISTS course_member (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     learner_id INTEGER NOT NULL,
     course_id INTEGER NOT NULL,
@@ -67,7 +67,7 @@ db.exec(`
     FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE
   );
 
-  CREATE TABLE course_group (
+  CREATE TABLE IF NOT EXISTS course_group (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     course_id INTEGER NOT NULL,
     course_member_id INTEGER NOT NULL,
@@ -76,7 +76,7 @@ db.exec(`
     FOREIGN KEY (course_member_id) REFERENCES course_member(id) ON DELETE CASCADE
   );
 
-  CREATE TABLE comment (
+  CREATE TABLE IF NOT EXISTS comment (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     course_id INTEGER NOT NULL,
