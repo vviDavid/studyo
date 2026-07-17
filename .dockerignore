@@ -1,6 +1,0 @@
-node_modules
-.gitignore
-.env
-README.md
-.devdbrc
-studyo-erd.dbml
