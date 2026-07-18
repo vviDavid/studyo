@@ -85,4 +85,17 @@ db.exec(`
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE
   );
+
+  CREATE INDEX IF NOT EXISTS idx_learner_user ON learner(user_id);
+  CREATE INDEX IF NOT EXISTS idx_mentor_user ON mentor(user_id);
+  CREATE INDEX IF NOT EXISTS idx_course_mentor ON course(mentor_id);
+  CREATE INDEX IF NOT EXISTS idx_course_content_course ON course_content(course_id);
+  CREATE INDEX IF NOT EXISTS idx_course_task_course_content ON course_task(course_content_id);
+  CREATE INDEX IF NOT EXISTS idx_course_task_course_member ON course_task(course_member_id);
+  CREATE INDEX IF NOT EXISTS idx_course_member_learner ON course_member(learner_id);
+  CREATE INDEX IF NOT EXISTS idx_course_member_course ON course_member(course_id);
+  CREATE INDEX IF NOT EXISTS idx_course_group_course ON course_group(course_id);
+  CREATE INDEX IF NOT EXISTS idx_course_group_course_member ON course_group(course_member_id);
+  CREATE INDEX IF NOT EXISTS idx_comment_user ON comment(user_id);
+  CREATE INDEX IF NOT EXISTS idx_comment_course ON comment(course_id);
 `);
