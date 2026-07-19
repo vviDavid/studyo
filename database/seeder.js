@@ -191,6 +191,7 @@ function runSeeder() {
     console.log('Clearing existing data...');
     db.exec(`
       DELETE FROM comment;
+      DELETE FROM course_group;
       DELETE FROM course_task;
       DELETE FROM course_member;
       DELETE FROM course_content;
