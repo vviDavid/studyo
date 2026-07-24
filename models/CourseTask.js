@@ -33,8 +33,6 @@ function gradeCourseTask(id, task_score) {
 }
 
 module.exports = {
-    fetchAllCourseTasks,
-    fetchCourseTaskById,
     createCourseTask,
     submitCourseTask,
     gradeCourseTask
